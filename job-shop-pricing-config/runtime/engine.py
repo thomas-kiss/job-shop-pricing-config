@@ -22,6 +22,14 @@ def load_operation(path: Path) -> Operation:
     return Operation(path.stem, path.name, code)
 
 
+HELPERS = {
+    "min": min,
+    "max": max,
+    "abs": abs,
+    "round": round,
+}
+
+
 def run_operation(op: Operation, part: dict, qty: int) -> float:
     def var(label, default, value_type="number"):
         return default
@@ -33,13 +41,14 @@ def run_operation(op: Operation, part: dict, qty: int) -> float:
         "part": part_ns,
         "qty": qty,
         "var": var,
+        **HELPERS
     }
 
     exec(op.code, scope_dict)  # noqa: S102 — empty __builtins__ 
-    if "PRICE" not in scope_dict:
-        raise ScriptError(f'{op.filename} script never set "PRICE"')
-    price = scope_dict["PRICE"]
-    return price
+    if "COST" not in scope_dict:
+        raise ScriptError(f'{op.filename} script never set "COST"')
+    cost = scope_dict["COST"]
+    return cost
 
 
 class Shop:
