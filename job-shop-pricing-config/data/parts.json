@@ -1,0 +1,17 @@
+[
+  {
+    "part_number": "FTC-09",
+    "name": "NIST FTC-09 Plate",
+    "process": "mill",
+    "material": "6061-T6 Aluminum",
+    "finish": "none",
+    "tolerance": "standard",
+    "length_in": 11.0,
+    "width_in": 7.5,
+    "height_in": 0.12,
+    "part_volume_in3": 8.33,
+    "surface_area_in2": 149.8,
+    "hole_count": 29,
+    "setup_count": 1
+  }
+]
