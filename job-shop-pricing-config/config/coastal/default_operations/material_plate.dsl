@@ -3,3 +3,5 @@ STOCK_VOLUME    = (part.length_in + buffer) * (part.width_in + buffer) * (part.h
 density         = var("Density (lb/in3)", 0.098)
 POUNDS_PER_PART = STOCK_VOLUME * density
 COST            = POUNDS_PER_PART * var("Cost Per Pound", 4.50, "currency") * qty
+
+set_workpiece_value("stock_volume", STOCK_VOLUME)

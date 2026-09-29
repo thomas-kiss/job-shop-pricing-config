@@ -30,9 +30,15 @@ HELPERS = {
 }
 
 
-def run_operation(op: Operation, part: dict, qty: int) -> float:
+def run_operation(op: Operation, part: dict, qty: int, workpiece: dict) -> float:
     def var(label, default, value_type="number"):
         return default
+
+    def set_workpiece_value(key, value):
+        workpiece[key] = value
+
+    def get_workpiece_value(key, default):
+        return workpiece.get(key, default)
 
     part_ns = SimpleNamespace(**part)
 
@@ -41,7 +47,9 @@ def run_operation(op: Operation, part: dict, qty: int) -> float:
         "part": part_ns,
         "qty": qty,
         "var": var,
-        **HELPERS
+        "set_workpiece_value": set_workpiece_value,
+        "get_workpiece_value": get_workpiece_value,
+        **HELPERS,
     }
 
     exec(op.code, scope_dict)  # noqa: S102 — empty __builtins__ 
@@ -74,8 +82,10 @@ class Shop:
 
         total = 0
 
+        workpiece = {}
+
         for op_name in routing:
             op_object = self.operations.get(op_name, "Operation name not found")
-            total += run_operation(op_object, part, qty)
+            total += run_operation(op_object, part, qty, workpiece)
 
         return total
