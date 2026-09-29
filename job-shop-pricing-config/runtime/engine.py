@@ -67,7 +67,7 @@ class Shop:
 
         for op_name in routing:
             op_object = self.operations.get(op_name, "Operation name not found")
-            total +=  run_operation(op_object, part, qty)
+            total += run_operation(op_object, part, qty)
 
         return total
 
