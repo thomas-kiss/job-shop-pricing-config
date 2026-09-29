@@ -1,3 +1,4 @@
+import csv
 from dataclasses import dataclass
 from pathlib import Path
 from types import SimpleNamespace
@@ -20,6 +21,36 @@ def load_operation(path: Path) -> Operation:
     source = path.read_text()
     code = compile(source, path.name, "exec")
     return Operation(path.stem, path.name, code)
+
+
+def load_tables(folder: Path) -> dict[str, list[dict]]:
+    tables = {}
+    for path in (folder / "tables").glob("*.csv"):
+        with open(path) as file:
+            reader = csv.DictReader(file)
+            rows = list(reader)
+            for row in rows:
+                for key in row:
+                    try:
+                        row[key] = float(row[key])
+                    except ValueError:
+                        pass
+            tables[path.stem] = rows
+    return tables
+
+
+def lookup(tables: dict, table_name: str, key: str, column: str) -> float | str:
+    if table_name not in tables:
+        known_tables = ", ".join(tables.keys())
+        raise ScriptError(f"'{table_name}' not found in '{known_tables}'")
+    rows = tables[table_name]
+    for row in rows:
+        first_col = next(iter(row))
+        if row[first_col] == key:
+            if column not in row:
+                raise ScriptError(f"'{column}' not found in '{table_name}'")
+            return row[column]
+    raise ScriptError(f"'{key}' not found in table '{table_name}'")
 
 
 HELPERS = {
@@ -52,7 +83,7 @@ def run_operation(op: Operation, part: dict, qty: int, workpiece: dict) -> float
         **HELPERS,
     }
 
-    exec(op.code, scope_dict)  # noqa: S102 — empty __builtins__ 
+    exec(op.code, scope_dict)  # noqa: S102 — empty __builtins__
     if "COST" not in scope_dict:
         raise ScriptError(f'{op.filename} script never set "COST"')
     cost = scope_dict["COST"]
