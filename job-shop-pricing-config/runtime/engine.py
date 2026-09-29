@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 from types import SimpleNamespace
+
 import yaml
 
 
@@ -34,7 +35,7 @@ def run_operation(op: Operation, part: dict, qty: int) -> float:
         "var": var,
     }
 
-    exec(op.code, scope_dict)
+    exec(op.code, scope_dict)  # noqa: S102 — empty __builtins__ 
     if "PRICE" not in scope_dict:
         raise ScriptError(f'{op.filename} script never set "PRICE"')
     price = scope_dict["PRICE"]
