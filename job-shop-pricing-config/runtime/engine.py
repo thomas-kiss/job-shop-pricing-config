@@ -70,8 +70,3 @@ class Shop:
             total += run_operation(op_object, part, qty)
 
         return total
-
-
-
-
-
