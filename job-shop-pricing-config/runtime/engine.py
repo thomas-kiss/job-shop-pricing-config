@@ -71,6 +71,9 @@ def run_operation(op: Operation, part: dict, qty: int, workpiece: dict, tables: 
     def get_workpiece_value(key, default):
         return workpiece.get(key, default)
 
+    def script_lookup(table_name, key, column):
+        return lookup(tables, table_name, key, column)
+
     part_ns = SimpleNamespace(**part)
 
     scope_dict = {
@@ -80,6 +83,7 @@ def run_operation(op: Operation, part: dict, qty: int, workpiece: dict, tables: 
         "var": var,
         "set_workpiece_value": set_workpiece_value,
         "get_workpiece_value": get_workpiece_value,
+        "lookup": script_lookup,
         **HELPERS,
     }
 
