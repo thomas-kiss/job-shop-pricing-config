@@ -65,4 +65,4 @@ def test_missing_price_raises_script_error():
     missing_price = compile("x=5", "broken.dsl", "exec")
     broken_op = Operation("broken", "broken.dsl", missing_price)
     with pytest.raises(ScriptError):
-        run_operation(broken_op, part, 1, {})
+        run_operation(broken_op, part, 1, {}, {})
