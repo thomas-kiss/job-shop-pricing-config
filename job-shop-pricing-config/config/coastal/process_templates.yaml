@@ -1,1 +1,1 @@
-mill: [material_plate, saw, cnc_mill]
+mill: [material_plate, saw, cnc_mill, deburr]
