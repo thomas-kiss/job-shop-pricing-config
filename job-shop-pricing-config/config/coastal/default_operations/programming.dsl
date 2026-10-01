@@ -1,0 +1,2 @@
+SETUP_TIME      = var("Initial Programming Hours", 1.0) + (part.setup_count - 1) * var("Additional Programming Hours", 0.5)
+COST            = SETUP_TIME * var("Setup Labor Rate", lookup("work_centers", "Programming", "setup_labor_rate"), "currency")
