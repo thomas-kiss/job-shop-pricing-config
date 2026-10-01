@@ -1,6 +1,6 @@
 # Job Shop Pricing Configurator
 
-[![CI](https://github.com/thomas-kiss/small-machina/actions/workflows/ci.yml/badge.svg)](https://github.com/thomas-kiss/small-machina/actions/workflows/ci.yml)
+[![CI](https://github.com/thomas-kiss/job-shop-pricing-config/actions/workflows/ci.yml/badge.svg)](https://github.com/thomas-kiss/job-shop-pricing-config/actions/workflows/ci.yml)
 
 A simple, lightweight, configurable pricing engine for a CNC job shop. A shop's quoting rules (work-center rates, material costs, setup and run-time estimates, inspection requirements) are written as small operation scripts and editable tables, and a generic engine runs them to produce a quote for any part at any quantity.
 
@@ -68,7 +68,7 @@ What I practiced along the way:
 
 ### Engine and configuration are separate
 
-[`runtime/engine.py`](job-shop-pricing-config/runtime/engine.py) is generic. It loads operation scripts, runs them in isolation, looks values up in tables, and adds up the cost of each operation in a part's routing. Everything specific to one shop lives in [`config/coastal/`](job-shop-pricing-config/config/coastal/) as scripts and tables. Onboarding a second shop means adding a second config folder, with no engine changes.
+[`runtime/engine.py`](runtime/engine.py) is generic. It loads operation scripts, runs them in isolation, looks values up in tables, and adds up the cost of each operation in a part's routing. Everything specific to one shop lives in [`config/coastal/`](config/coastal/) as scripts and tables. Onboarding a second shop means adding a second config folder, with no engine changes.
 
 ### The pricing model
 
@@ -87,7 +87,7 @@ Rates come from the work-center table, and material properties come from the mat
 
 ### Operation scripts
 
-Each operation is a short script in [`default_operations/`](job-shop-pricing-config/config/coastal/default_operations/). A script reads the part (`part.material`, `part.hole_count`, and so on) and the order quantity (`qty`), declares any number an estimator should be able to adjust with `var()`, and sets `COST`, the dollar amount that operation adds to the quote. The milling operation:
+Each operation is a short script in [`default_operations/`](config/coastal/default_operations/). A script reads the part (`part.material`, `part.hole_count`, and so on) and the order quantity (`qty`), declares any number an estimator should be able to adjust with `var()`, and sets `COST`, the dollar amount that operation adds to the quote. The milling operation:
 
 ```
 SETUP_TIME      = var("First Setup Hours", 1.0) + (part.setup_count - 1) * var("Additional Setup Hours", 0.5)
@@ -102,7 +102,7 @@ COST            = SETUP_TIME * var("Setup Labor Rate", lookup("work_centers", "C
 
 ### Rates and materials live in tables
 
-Work-center rates and material properties are CSV files in [`tables/`](job-shop-pricing-config/config/coastal/tables/), read by scripts through `lookup(table, key, column)`. Raising the CNC Mill machine rate is a one-cell edit in `work_centers.csv`. Every quote picks it up and no script changes.
+Work-center rates and material properties are CSV files in [`tables/`](config/coastal/tables/), read by scripts through `lookup(table, key, column)`. Raising the CNC Mill machine rate is a one-cell edit in `work_centers.csv`. Every quote picks it up and no script changes.
 
 ### Operations share data through a workpiece
 
@@ -160,17 +160,16 @@ Some pieces are my own simpler versions of P3L features:
 ## Project structure
 
 ```
-.github/workflows/ci.yml      tests and lint on every push
-job-shop-pricing-config/
-  runtime/engine.py           generic engine: script loading, isolated execution, lookups, workpiece
-  config/coastal/
-    shop.yaml                 shop settings
-    process_templates.yaml    routing: which operations run, in order
-    default_operations/       the six operation scripts
-    tables/                   work_centers.csv, materials_library.csv, stock_sizes.csv
-  data/parts.json             five NIST reference parts
-  tests/test_pricing.py
-  demo.py                     quotes every part at four quantities
+.github/workflows/ci.yml    tests, lint, and format check on every push
+runtime/engine.py           generic engine: script loading, isolated execution, lookups, workpiece
+config/coastal/
+  shop.yaml                 shop settings
+  process_templates.yaml    routing: which operations run, in order
+  default_operations/       the six operation scripts
+  tables/                   work_centers.csv, materials_library.csv, stock_sizes.csv
+data/parts.json             five NIST reference parts
+tests/test_pricing.py
+demo.py                     quotes every part at four quantities
 ```
 
 ## Getting started
@@ -178,15 +177,16 @@ job-shop-pricing-config/
 Requires Python 3.14.
 
 ```bash
-git clone https://github.com/thomas-kiss/small-machina.git
-cd small-machina/job-shop-pricing-config
+git clone https://github.com/thomas-kiss/job-shop-pricing-config.git
+cd job-shop-pricing-config
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-python demo.py      # quote all five parts
-pytest -q           # run tests
-ruff check .        # lint
+python demo.py        # quote all five parts
+pytest -q             # run tests
+ruff check .          # lint
+ruff format --check . # formatting
 ```
 
 Built with Python, PyYAML for configuration files, pytest, ruff, and GitHub Actions.
