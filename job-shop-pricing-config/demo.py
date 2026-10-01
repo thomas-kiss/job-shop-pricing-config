@@ -1,3 +1,5 @@
+"""Print quotes for each sample part at quantities 1, 10, 50 and 100."""
+
 import json
 
 from runtime.engine import Shop
@@ -13,7 +15,7 @@ for part in parts_list:
 
     process_name = part.get("process")
     routing = shop.templates.get(process_name, "Process not found")
-    print(f"Routing: {", ".join(routing)}")
+    print(f"Routing: {', '.join(routing)}")
     print()
 
     print(f"{'Qty':>6} | {'Total':>12}")
