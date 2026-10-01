@@ -13,5 +13,69 @@
     "surface_area_in2": 149.8,
     "hole_count": 29,
     "setup_count": 1
+  },
+  
+  {
+    "part_number": "FTC-06",
+    "name": "NIST FTC-06 Bracket",
+    "process": "mill",
+    "material": "304 Stainless",
+    "finish": "passivate",
+    "tolerance": "standard",
+    "length_in": 12.0,
+    "width_in": 9.75,
+    "height_in": 4.2,
+    "part_volume_in3": 202.8,
+    "surface_area_in2": 439.3,
+    "hole_count": 22,
+    "setup_count": 3
+  },
+
+  {
+    "part_number": "FTC-07",
+    "name": "NIST FTC-07 Box",
+    "process": "mill",
+    "material": "6061-T6 Aluminum",
+    "finish": "anodize",
+    "tolerance": "standard",
+    "length_in": 12.27,
+    "width_in": 8.77,
+    "height_in": 5.35,
+    "part_volume_in3": 105.3,
+    "surface_area_in2": 606.6,
+    "hole_count": 27,
+    "setup_count": 5
+  },
+
+  {
+    "part_number": "FTC-08",
+    "name": "NIST FTC-08 Lid",
+    "process": "mill",
+    "material": "6061-T6 Aluminum",
+    "finish": "anodize",
+    "tolerance": "standard",
+    "length_in": 12.27,
+    "width_in": 8.77,
+    "height_in": 1.9,
+    "part_volume_in3": 30.7,
+    "surface_area_in2": 297.1,
+    "hole_count": 20,
+    "setup_count": 2
+  },
+
+  {
+    "part_number": "FTC-10",
+    "name": "NIST FTC-10 Housing",
+    "process": "mill",
+    "material": "6061-T6 Aluminum",
+    "finish": "anodize",
+    "tolerance": "tight",
+    "length_in": 6.22,
+    "width_in": 2.95,
+    "height_in": 1.22,
+    "part_volume_in3": 11.5,
+    "surface_area_in2": 75.2,
+    "hole_count": 38,
+    "setup_count": 4
   }
 ]
