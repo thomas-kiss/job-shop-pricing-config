@@ -1,29 +1,38 @@
+"""Stand-in P3L runtime: loads a shop's config and runs its operation scripts."""
+
 import csv
 from dataclasses import dataclass
 from pathlib import Path
-from types import SimpleNamespace
+from types import CodeType, SimpleNamespace
 
 import yaml
 
 
 class ScriptError(Exception):
-    "An operation script is invalid or failed while running"
+    """An operation script is invalid or failed while running."""
 
 
 @dataclass
 class Operation:
+    """A compiled operation script, ready to run."""
+
     name: str
     filename: str
-    code: object
+    code: CodeType
 
 
 def load_operation(path: Path) -> Operation:
+    """Compile a .dsl script into an Operation."""
     source = path.read_text()
     code = compile(source, path.name, "exec")
     return Operation(path.stem, path.name, code)
 
 
-def load_tables(folder: Path) -> dict[str, list[dict]]:
+type Tables = dict[str, list[dict]]
+
+
+def load_tables(folder: Path) -> Tables:
+    """Load each CSV in folder/tables, converting numeric cells to floats."""
     tables = {}
     for path in (folder / "tables").glob("*.csv"):
         with open(path) as file:
@@ -39,7 +48,11 @@ def load_tables(folder: Path) -> dict[str, list[dict]]:
     return tables
 
 
-def lookup(tables: dict, table_name: str, key: str, column: str) -> float | str:
+def lookup(tables: Tables, table_name: str, key: str, column: str) -> float | str:
+    """Return `column` from the row whose first column equals `key`.
+
+    Raises ScriptError if the table, row, or column is missing.
+    """
     if table_name not in tables:
         known_tables = ", ".join(tables.keys())
         raise ScriptError(f"'{table_name}' not found in '{known_tables}'")
@@ -61,7 +74,17 @@ HELPERS = {
 }
 
 
-def run_operation(op: Operation, part: dict, qty: int, workpiece: dict, tables: dict) -> float:
+def run_operation(
+    op: Operation, part: dict, qty: int, workpiece: dict[str, float], tables: Tables
+) -> float:
+    """Run one operation script and return the COST it sets.
+
+    Values saved with set_workpiece_value stay in `workpiece` for later
+    operations to read.
+
+    Raises ScriptError if the script does not set COST to a number.
+    """
+
     def var(label, default, value_type="number"):
         return default
 
@@ -91,35 +114,42 @@ def run_operation(op: Operation, part: dict, qty: int, workpiece: dict, tables: 
     if "COST" not in scope_dict:
         raise ScriptError(f'{op.filename} script never set "COST"')
     cost = scope_dict["COST"]
-    return cost
+    if not isinstance(cost, (int, float)):
+        raise ScriptError(
+            f'{op.filename} set "COST" to {cost!r}, which is not a number'
+        )
+    return float(cost)
 
 
 class Shop:
-    def __init__(self, folder: str) -> None:
-        folder = Path(folder)
+    """A shop's pricing configuration, loaded from its config folder."""
 
-        with open(folder / "shop.yaml") as file:
+    def __init__(self, folder: str | Path) -> None:
+        folder_path = Path(folder)
+
+        with open(folder_path / "shop.yaml") as file:
             shop_data = yaml.safe_load(file)
         self.name = shop_data.get("name", "Shop not found")
 
-        with open(folder / "process_templates.yaml") as file:
+        with open(folder_path / "process_templates.yaml") as file:
             process_data = yaml.safe_load(file)
         self.templates = process_data
 
-        self.tables = load_tables(folder)
+        self.tables = load_tables(folder_path)
 
         self.operations = {}
-        for path in (folder / "default_operations").glob("*.dsl"):
+        for path in (folder_path / "default_operations").glob("*.dsl"):
             operation = load_operation(path)
             self.operations[operation.name] = operation
 
     def quote(self, part: dict, qty: int) -> float:
+        """Price `qty` of a part by running each operation in its routing."""
         process_name = part.get("process")
         routing = self.templates.get(process_name, "Process not found")
 
-        total = 0
+        total = 0.0
 
-        workpiece = {}
+        workpiece: dict[str, float] = {}
 
         for op_name in routing:
             op_object = self.operations.get(op_name, "Operation name not found")
