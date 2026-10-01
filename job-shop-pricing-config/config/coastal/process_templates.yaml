@@ -1,1 +1,1 @@
-mill: [material_plate, cnc_mill]
+mill: [material_plate, saw, programming, cnc_mill, deburr, inspection]

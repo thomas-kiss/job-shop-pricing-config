@@ -1,0 +1,6 @@
+work_center,setup_labor_rate,run_labor_rate,machine_rate,crew,efficiency
+CNC Mill,75,50,50,1,80
+Saw,45,45,10,1,90
+Deburr,0,45,0,1,100
+Inspection,70,70,0,1,100
+Programming,50,0,0,1,100

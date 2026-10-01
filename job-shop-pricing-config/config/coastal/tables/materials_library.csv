@@ -1,0 +1,5 @@
+material,family,density,cost_per_lb,machinability
+6061-T6 Aluminum,Aluminum,0.098,4.50,1.0
+304 Stainless,Stainless,0.289,6.00,1.8
+1018 Steel,Steel,0.284,1.75,1.4
+Delrin (Acetal),Plastic,0.051,8.00,0.8

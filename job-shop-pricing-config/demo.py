@@ -21,3 +21,5 @@ for part in parts_list:
     for qty in (1, 10, 50, 100):
         price = shop.quote(part, qty)
         print(f"{qty:>6} | {price:>12.2f}")
+    print()
+    print()
